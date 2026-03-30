@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\UploadImage;
 use App\Http\Controllers\Controller;
+use App\Jobs\ResizeImage;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
@@ -106,7 +108,11 @@ class PostController extends Controller
             while (Storage::exists('posts/' . $nameFile)) {
                 $nameFile = str_replace('.'. $extension, '-copia.'. $extension, $nameFile);
             }
+
             $data['image_path'] = Storage::putFileAs('posts', $request->image, $nameFile);
+
+            // ResizeImage::dispatch($data['image_path']);
+            UploadImage::dispatch($data['image_path']);
         }
 
         $post->update($data);
