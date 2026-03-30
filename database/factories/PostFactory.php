@@ -22,7 +22,7 @@ class PostFactory extends Factory
             'slug' => $this->faker->unique()->slug(),
             'excerpt' => $this->faker->paragraph(),
             'content' => $this->faker->paragraphs(20, true),
-            'is_published' => $this->faker->boolean(),
+            'is_published' => true,
             'published_at' => $this->faker->dateTime(),
             'user_id' => \App\Models\User::all()->random()->id,
             'category_id' => \App\Models\Category::all()->random()->id,

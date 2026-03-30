@@ -19,7 +19,7 @@
     @method('PUT')
 
     <div class="relative mb-2">
-      <img class="w-full aspect-video object-cover object-center" id="imgPreview" src="{{ $post->image_path ? Storage::url($post->image_path) : 'https://img.freepik.com/vector-premium/vector-icono-imagen-predeterminado-pagina-imagen-faltante-diseno-sitio-web-o-aplicacion-movil-no-hay-foto-disponible_87543-11093.jpg' }}" alt="">
+      <img class="w-full aspect-video object-cover object-center" id="imgPreview" src="{{ $post->image }}" alt="">
       <div class="absolute top-8 right-8">
         <label class="bg-white px-4 rounded-lg py-2 cursor-pointer">
           Cambiar imagen
