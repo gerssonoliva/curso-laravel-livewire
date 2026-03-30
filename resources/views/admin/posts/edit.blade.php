@@ -13,18 +13,23 @@
     </flux:breadcrumbs>
   </div>
 
-  <form action="{{ route('admin.posts.update', $post) }}" method="post">
+  <form action="{{ route('admin.posts.update', $post) }}" method="post" enctype="multipart/form-data">
 
     @csrf
     @method('PUT')
 
     <div class="relative mb-2">
-      <img class="w-full aspect-video object-cover object-center" id="imgPreview" src="https://img.freepik.com/vector-premium/vector-icono-imagen-predeterminado-pagina-imagen-faltante-diseno-sitio-web-o-aplicacion-movil-no-hay-foto-disponible_87543-11093.jpg" alt="">
+      <img class="w-full aspect-video object-cover object-center" id="imgPreview" src="{{ $post->image_path ? Storage::url($post->image_path) : 'https://img.freepik.com/vector-premium/vector-icono-imagen-predeterminado-pagina-imagen-faltante-diseno-sitio-web-o-aplicacion-movil-no-hay-foto-disponible_87543-11093.jpg' }}" alt="">
       <div class="absolute top-8 right-8">
         <label class="bg-white px-4 rounded-lg py-2 cursor-pointer">
           Cambiar imagen
           <input class="hidden" type="file" name="image" onchange="preview_image(event, '#imgPreview')" accept="image/*">
         </label>
+        <div class="mt-4 bg-white px-4 rounded-lg py-2 cursor-pointer">
+          <a href="{{ route('admin.posts.download-image', $post) }}">
+            Descargar imagen
+          </a>
+        </div>
       </div>
     </div>
 

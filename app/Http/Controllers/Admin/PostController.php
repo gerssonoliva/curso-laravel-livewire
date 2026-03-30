@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -78,17 +79,16 @@ class PostController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            // 'slug' => 'required|string|max:255|unique:posts,slug,' . $post->id,
             'slug' => [
                 Rule::requiredIf(function() use ($post) {
                     return !$post->published_at;
                 }),
                 'string',
                 'max:255',
-                // 'unique:posts,slug,' . $post->id,
                 Rule::unique('posts')
                     ->ignore($post->id)
             ],
+            'image' => 'nullable|image',
             'category_id' => 'nullable|exists:categories,id',
             'excerpt' => 'required_if:is_published,1|string',
             'content' => 'required_if:is_published,1|string',
@@ -96,6 +96,18 @@ class PostController extends Controller
             'tags.*' => 'required|string|max:50',  
             'is_published' => 'boolean',
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($post->image_path) {
+                Storage::delete($post->image_path);
+            }
+            $extension = $request->image->extension();
+            $nameFile = $post->slug . '.' .$extension;
+            while (Storage::exists('posts/' . $nameFile)) {
+                $nameFile = str_replace('.'. $extension, '-copia.'. $extension, $nameFile);
+            }
+            $data['image_path'] = Storage::putFileAs('posts', $request->image, $nameFile);
+        }
 
         $post->update($data);
 
