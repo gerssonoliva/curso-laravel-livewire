@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
@@ -69,6 +70,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        // Gate::authorize('author', $post);
+
         $categories = Category::all();
         $tags = Tag::all();
         return view('admin.posts.edit', compact('post', 'categories', 'tags'));
@@ -136,6 +139,19 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        // Gate::authorize('author', $post);
+
+        if($post->image_path) {
+            Storage::delete($post->image_path);
+        }
+        $post->delete();
+
+        session()->flash('swal', [
+            'title' => 'Post eliminado',
+            'text' => 'El post ha sido eliminado exitosamente.',
+            'icon' => 'success',
+        ]);
+
+        return redirect()->route('admin.posts.index');
     }
 }
