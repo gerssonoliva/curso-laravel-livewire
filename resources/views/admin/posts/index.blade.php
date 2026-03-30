@@ -70,7 +70,7 @@
     {{ $posts->links() }}
   </div>
 
-  @push('post-scripts')
+  @push('js')
     <script>
       document.querySelectorAll('.form-delete').forEach(form => {
         form.addEventListener('submit', function(e) {

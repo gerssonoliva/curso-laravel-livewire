@@ -12,6 +12,8 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
+        @stack('css')
+
         {{-- SweetAlert2 --}}
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         
@@ -144,8 +146,23 @@
                 Swal.fire(@json(session('swal')));
             </script>
         @endif
+
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    title: 'Error',
+                    icon: 'error',
+                    html: `
+                        <ul class="text-left list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>`
+                });
+            </script>
+        @endif
         
-        @stack('category-scripts')
-        @stack('post-scripts')
+        @stack('js')
+
     </body>
 </html>

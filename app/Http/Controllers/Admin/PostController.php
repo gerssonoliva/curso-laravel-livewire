@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -65,7 +67,8 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
-        return view('admin.posts.edit', compact('post', 'categories'));
+        $tags = Tag::all();
+        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -75,14 +78,31 @@ class PostController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:posts,slug,' . $post->id,
+            // 'slug' => 'required|string|max:255|unique:posts,slug,' . $post->id,
+            'slug' => [
+                Rule::requiredIf(function() use ($post) {
+                    return !$post->published_at;
+                }),
+                'string',
+                'max:255',
+                // 'unique:posts,slug,' . $post->id,
+                Rule::unique('posts')
+                    ->ignore($post->id)
+            ],
             'category_id' => 'nullable|exists:categories,id',
             'excerpt' => 'required_if:is_published,1|string',
             'content' => 'required_if:is_published,1|string',
+            'tags' => 'nullable|array',
+            'tags.*' => 'required|string|max:50',  
             'is_published' => 'boolean',
         ]);
 
         $post->update($data);
+
+        $tagIds = collect($request->tags)->map(function($tagName) {
+            return Tag::firstOrCreate(['name' => $tagName])->id;
+        })->toArray();
+        $post->tags()->sync($tagIds);
 
         session()->flash('swal', [
             'title' => 'Post actualizado',
