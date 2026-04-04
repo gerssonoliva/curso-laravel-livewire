@@ -6,15 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class CategoryController extends Controller/*  implements HasMiddleware */
+class CategoryController extends Controller implements HasMiddleware
 {
-    /* public static function middleware() {
+    public static function middleware() {
         return [
-            'admin'
+            new Middleware('can:manage categories')
         ];
     }
- */
+
     /**
      * Display a listing of the resource.
      */
